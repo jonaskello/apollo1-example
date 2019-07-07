@@ -27,6 +27,7 @@ export const channelsListQuery = gql`
       code
       name
       countries {
+        code
         name
       }
     }

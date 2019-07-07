@@ -1,15 +1,17 @@
 import React, { Component } from "react";
 import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
-import "./App.css";
-import NotFound from "./components/NotFound";
-import ContinentList from "./components/ContinentList";
-import ContinentDetails from "./components/ContinentDetails";
+import { createStore, combineReducers, applyMiddleware, compose } from "redux";
+import logger from "redux-logger";
 import {
   ApolloClient,
   ApolloProvider,
   createNetworkInterface,
   toIdValue
 } from "react-apollo";
+import "./App.css";
+import NotFound from "./components/NotFound";
+import ContinentList from "./components/ContinentList";
+import ContinentDetails from "./components/ContinentDetails";
 
 const networkInterface = createNetworkInterface({
   uri: "https://countries.trevorblades.com/graphql"
@@ -25,8 +27,8 @@ networkInterface.use([
 
 function dataIdFromObject(result) {
   if (result.__typename) {
-    if (result.id !== undefined) {
-      return `${result.__typename}:${result.id}`;
+    if (result.code !== undefined) {
+      return `${result.__typename}:${result.code}`;
     }
   }
   return null;
@@ -46,10 +48,27 @@ const client = new ApolloClient({
   dataIdFromObject
 });
 
+const store = createStore(
+  combineReducers({
+    // todos: todoReducer,
+    // users: userReducer,
+    apollo: client.reducer()
+  }),
+  {}, // initial state
+  compose(
+    applyMiddleware(client.middleware()),
+    applyMiddleware(logger),
+    // If you are using the devToolsExtension, you can add it here also
+    typeof window.__REDUX_DEVTOOLS_EXTENSION__ !== "undefined"
+      ? window.__REDUX_DEVTOOLS_EXTENSION__()
+      : f => f
+  )
+);
+
 class App extends Component {
   render() {
     return (
-      <ApolloProvider client={client}>
+      <ApolloProvider client={client} store={store}>
         <BrowserRouter>
           <div className="App">
             <Link to="/" className="navbar">
