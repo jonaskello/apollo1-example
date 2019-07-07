@@ -21,8 +21,8 @@ const ContinentList = ({ data: { loading, error, continents } }) => {
   );
 };
 
-export const channelsListQuery = gql`
-  query ChannelsListQuery {
+export const continentsListQuery = gql`
+  query ContinentsListQuery {
     continents {
       code
       name
@@ -34,4 +34,4 @@ export const channelsListQuery = gql`
   }
 `;
 
-export default graphql(channelsListQuery)(ContinentList);
+export default graphql(continentsListQuery)(ContinentList);
